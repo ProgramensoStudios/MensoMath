@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using static Interfaces;
@@ -9,52 +10,88 @@ using Random = UnityEngine.Random;
 public class FallingNumbers : Numbers, IChooseFace, IChooseColor
 {
     public new SpriteRenderer renderer;
-    public Color[] colors;
-
+    public SpriteRenderer faceRenderer;
     public Sprite[] faces;
+    public PoolingManager pool;
+    [SerializeField] private TMP_Text text;
+    
 
-    public delegate void StartMerge(Transform targetPosition);
-    public StartMerge OnStartMerge;
+   /// <summary>
+   /// Custom Event 
+   /// </summary>
+   // public delegate void StartMerge(Transform targetPosition);
+   // public StartMerge OnStartMerge;
+   private Camera mainCamera;
 
-    public new void Start()
+   private Rigidbody2D rb;
+   [SerializeField] private Transform leftLimit;    
+   [SerializeField] private Transform rightLimit;
+   private bool isFollowingMouse = true;
+
+   private void Awake()
+   {
+       leftLimit = GameObject.Find("LeftLimit").transform;
+       rightLimit = GameObject.Find("RightLimit").transform;
+       pool = FindAnyObjectByType<PoolingManager>().GetComponent<PoolingManager>();
+       rb = GetComponent<Rigidbody2D>();
+   }
+
+   public void Start()
     {
-        ChooseColor();
-        //ChooseFace();
+        ChooseFace();
+        text.text = value.ToString();
+        mainCamera = Camera.main;
     }
-    public override void ChangeValue() 
-    {
-        if (isPositive)
-        { 
-            isPositive = false; 
-        }
-        else if (!isPositive)
-        {
-            isPositive = true;
-        }
-    }
+   private void Update()
+   {
+       if (isFollowingMouse)
+       {
+           var mousePosition = Input.mousePosition;
+           var worldPosition = mainCamera.ScreenToWorldPoint(mousePosition);
+           var pos = transform.position;
+           float clampedX = Mathf.Clamp(worldPosition.x, leftLimit.position.x, rightLimit.position.x);
+           transform.position = new Vector3(clampedX, pos.y, 0);
+       }
 
-    private void OnCollision2DEnter(Collision2D collision)
+       if (!Input.GetMouseButtonDown(0)) return;
+       isFollowingMouse = false;
+       rb.gravityScale = 1;
+   }
+
+    private void OnCollisionEnter2D(Collision2D other)
     {
+        if (other.gameObject.layer != 6) return;
         Dissolve();
+        rb.gravityScale = 0;
+        isFollowingMouse = true;
     }
 
     public override void Dissolve() 
     {
-        OnStartMerge?.Invoke(this.gameObject.transform);
-        this.gameObject.SetActive(false);
+        //OnStartMerge?.Invoke(gameObject.transform);
+        pool.ReturnObject(gameObject);
     }
 
     public void ChooseFace()
     {
         var chosenFace = Random.Range(0, faces.Length);
-        var newFace =  Instantiate(faces[chosenFace]);
-       
-        
+        faceRenderer.sprite = faces[chosenFace];
+    }
+
+    public void OnEnable()
+    {
+        text.text = value.ToString();
+        ChooseColor();
     }
 
     public void ChooseColor()
     {
-        var chosenColor = Random.Range(0, colors.Length);
-        renderer.color = colors[chosenColor];
+        isPositive = value switch
+        {
+            > 0 => true,
+            < 0 => false,
+            _ => isPositive
+        };
+        renderer.color = isPositive ? Color.green : Color.red;
     }
 }
