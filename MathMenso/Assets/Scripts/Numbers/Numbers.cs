@@ -2,8 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Numbers : MonoBehaviour
+public class Numbers : MonoBehaviour
 {
+    [SerializeField] public LevelManager levelManager;
+    [SerializeField] private LevelSettings levelSettings;
+
     /// <summary>
     /// Value of this number
     /// </summary>
@@ -25,4 +28,32 @@ public abstract class Numbers : MonoBehaviour
     /// Manages if the number is positive or negative.
     /// </summary>
     public virtual void ChangeValue() { }
+
+    public virtual void ChooseValue() 
+    {
+        var sets = levelSettings.levelSetts;
+       
+        switch (levelManager.level) 
+        {
+            case 1: value = Random.Range(sets.level1MinValue, sets.level1MaxValue); break;
+            case 2: value = Random.Range(sets.level2MinValue, sets.level2MaxValue); break;
+            case 3: value = Random.Range(sets.level3MinValue, sets.level3MaxValue); break;
+            case 4: value = Random.Range(sets.level4MinValue, sets.level4MaxValue); break;
+            case 5: value = Random.Range(sets.level5MinValue, sets.level5MaxValue); break;
+            case 6: value = Random.Range(sets.level6MinValue, sets.level6MaxValue); break;
+            case 7: value = Random.Range(sets.level7MinValue, sets.level7MaxValue); break;
+        }
+
+    }
+
+    public void Start()
+    {
+        levelManager = FindAnyObjectByType<LevelManager>().GetComponent<LevelManager>();
+        ChooseValue();
+    }
+
+    public virtual void LevelUp()
+    {
+        ChooseValue();
+    }
 }
