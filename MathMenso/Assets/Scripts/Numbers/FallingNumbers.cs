@@ -27,7 +27,7 @@ public class FallingNumbers : Numbers, IChooseFace, IChooseColor
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollision2DEnter(Collision2D collision)
     {
         Dissolve();
     }
@@ -35,6 +35,7 @@ public class FallingNumbers : Numbers, IChooseFace, IChooseColor
     public override void Dissolve() 
     {
         OnStartMerge?.Invoke(this.gameObject.transform);
+        this.gameObject.SetActive(false);
     }
 
     void IChooseFace.ChooseFace()
