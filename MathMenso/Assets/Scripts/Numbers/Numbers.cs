@@ -32,6 +32,7 @@ public class Numbers : MonoBehaviour
     public virtual void ChooseValue() 
     {
         var sets = levelSettings.levelSetts;
+        Debug.Log("Entre a Choose Value");
        
         switch (levelManager.level) 
         {

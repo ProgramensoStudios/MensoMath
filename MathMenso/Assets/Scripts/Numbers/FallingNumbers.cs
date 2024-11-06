@@ -15,6 +15,12 @@ public class FallingNumbers : Numbers, IChooseFace, IChooseColor
 
     public delegate void StartMerge(Transform targetPosition);
     public StartMerge OnStartMerge;
+
+    public new void Start()
+    {
+        ChooseColor();
+        //ChooseFace();
+    }
     public override void ChangeValue() 
     {
         if (isPositive)
@@ -38,11 +44,11 @@ public class FallingNumbers : Numbers, IChooseFace, IChooseColor
         this.gameObject.SetActive(false);
     }
 
-    void IChooseFace.ChooseFace()
+    public void ChooseFace()
     {
         var chosenFace = Random.Range(0, faces.Length);
         var newFace =  Instantiate(faces[chosenFace]);
-        newFace.GameObject().transform.SetParent(this.gameObject.transform, false);
+       
         
     }
 
