@@ -14,6 +14,8 @@ public class FallingNumbers : Numbers, IChooseFace, IChooseColor
     public Sprite[] faces;
     public PoolingManager pool;
     [SerializeField] private TMP_Text text;
+    public Color green;
+    public Color red;
     
 
    /// <summary>
@@ -42,6 +44,7 @@ public class FallingNumbers : Numbers, IChooseFace, IChooseColor
         text.text = value.ToString();
         mainCamera = Camera.main;
     }
+
    private void Update()
    {
        if (isFollowingMouse)
@@ -49,7 +52,7 @@ public class FallingNumbers : Numbers, IChooseFace, IChooseColor
            var mousePosition = Input.mousePosition;
            var worldPosition = mainCamera.ScreenToWorldPoint(mousePosition);
            var pos = transform.position;
-           float clampedX = Mathf.Clamp(worldPosition.x, leftLimit.position.x, rightLimit.position.x);
+           float clampedX = Mathf.Clamp(worldPosition.x, leftLimit.position.x +1f, rightLimit.position.x -1f);
            transform.position = new Vector3(clampedX, pos.y, 0);
        }
 
@@ -82,6 +85,8 @@ public class FallingNumbers : Numbers, IChooseFace, IChooseColor
     {
         text.text = value.ToString();
         ChooseColor();
+        transform.rotation = new Quaternion(0f, 0f, 0f, 1f);
+        ChooseFace();
     }
 
     public void ChooseColor()
@@ -92,6 +97,6 @@ public class FallingNumbers : Numbers, IChooseFace, IChooseColor
             < 0 => false,
             _ => isPositive
         };
-        renderer.color = isPositive ? Color.green : Color.red;
+        renderer.color = isPositive ? green : red;
     }
 }

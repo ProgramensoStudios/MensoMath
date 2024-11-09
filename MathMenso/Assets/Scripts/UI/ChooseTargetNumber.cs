@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ChooseTargetNumber : MonoBehaviour
@@ -9,13 +10,37 @@ public class ChooseTargetNumber : MonoBehaviour
     private int _value;
     [SerializeField] public LevelManager levelManager;
     [SerializeField] private LevelSettings levelSettings;
+    private RootNumber _rootNumber;
 
-    
+    [SerializeField] private Canvas nextLevelCanvas;
+    [SerializeField] HandleNextLevel nextLevelHandle;
+
+
     public void Awake()
     {
         levelManager = FindAnyObjectByType<LevelManager>().GetComponent<LevelManager>();
         levelSettings = FindAnyObjectByType<LevelSettings>().GetComponent<LevelSettings>();
         _text = GetComponent<TMP_Text>();
+        _rootNumber = FindAnyObjectByType<RootNumber>();
+    }
+
+    private void OnEnable()
+    {
+        _rootNumber.OnProcessOperation += ValidateTargetNumber;
+        nextLevelHandle.OnHandleNextLevel += ChooseValue;
+    }
+    private void OnDisable()
+    {
+        _rootNumber.OnProcessOperation -= ValidateTargetNumber;
+        nextLevelHandle.OnHandleNextLevel -= ChooseValue;
+    }
+
+    private void ValidateTargetNumber(int value)
+    {
+        if (value != _value) return;
+        {
+            nextLevelCanvas.enabled = true;
+        }
     }
 
     private void Start()

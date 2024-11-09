@@ -6,6 +6,8 @@ public class LevelManager : MonoBehaviour
 {
    private static LevelManager instance;
    public int level;
+   
+    
     public static LevelManager Instance
     {
         get
@@ -42,4 +44,5 @@ public class LevelManager : MonoBehaviour
             DontDestroyOnLoad(gameObj);
         }
     }
+
 }
