@@ -17,6 +17,7 @@ public class LevelUpdater : MonoBehaviour
 
     private void OnDisable()
     {
+
         nextLevelHandle.OnHandleNextLevel -= UpdateLevel;
     }
 
